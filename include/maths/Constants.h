@@ -61,7 +61,7 @@ const double SIGNIFICANT_AMPLITUDE[]{1.0, 2.0};
 //! The minimum autocorrelation of a seasonal component to be
 //! worthwhile modeling. We have different thresholds because we
 //! have inductive bias for particular types of components.
-const double SIGNIFICANT_AUTOCORRELATION[]{0.5, 0.7};
+const double SIGNIFICANT_AUTOCORRELATION[]{0.5, 0.6};
 
 //! The maximum significance of a test statistic to choose to model
 //! a trend decomposition component.

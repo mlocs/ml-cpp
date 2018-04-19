@@ -209,7 +209,7 @@ void CPeriodicityHypothesisTestsTest::testDiurnal() {
     }
 
     LOG_DEBUG(<< "");
-    LOG_DEBUG(<< "*** Diurnal: daily and weekends ***");
+    LOG_DEBUG(<< "*** Diurnal: daily, weekly and weekends + outliers ***");
     {
         TTimeDoublePrVec timeseries;
         core_t::TTime startTime;
@@ -234,8 +234,8 @@ void CPeriodicityHypothesisTestsTest::testDiurnal() {
             core_t::TTime time{timeseries[i].first};
             if (time > lastTest + window) {
                 maths::CPeriodicityHypothesisTestsResult result{hypotheses.test()};
-                CPPUNIT_ASSERT_EQUAL(std::string("{ 'weekend daily' 'weekday daily' }"),
-                                     result.print());
+                CPPUNIT_ASSERT(result.print() == "{ 'weekend daily' 'weekday daily' }" ||
+                               result.print() == "{ 'weekend daily' 'weekday daily' 'weekend weekly' 'weekday weekly' }");
                 hypotheses = maths::CPeriodicityHypothesisTests();
                 hypotheses.initialize(HOUR, window, DAY);
                 lastTest += window;
@@ -397,6 +397,9 @@ void CPeriodicityHypothesisTestsTest::testNonDiurnal() {
 }
 
 void CPeriodicityHypothesisTestsTest::testWithSparseData() {
+    // Test we correctly identify periodicity if there are periodically
+    // missing data.
+
     test::CRandomNumbers rng;
 
     LOG_DEBUG(<< "Daily Periodic") {
@@ -527,6 +530,116 @@ void CPeriodicityHypothesisTestsTest::testWithSparseData() {
     }
 }
 
+void CPeriodicityHypothesisTestsTest::testWithOutliers() {
+    // Test the we can robustly detect the correct underlying periodic
+    // components.
+
+    TTimeVec windows{WEEK, 2 * WEEK, 16 * DAY, 4 * WEEK};
+    TTimeVec bucketLengths{TEN_MINS, HALF_HOUR};
+    TTimeVec periods{DAY, WEEK};
+    TDoubleVec modulation{0.1, 0.1, 1.0, 1.0, 1.0, 1.0, 1.0};
+    core_t::TTime startTime{10000};
+
+    test::CRandomNumbers rng;
+
+    TDoubleVec noise;
+    TSizeVec outliers;
+    TDoubleVec spikeOrTroughSelector;
+
+    LOG_DEBUG(<< "Daily + Weekly");
+    for (const auto& period : periods) {
+        for (const auto& window : windows) {
+            if (window < 2 * period) {
+                continue;
+            }
+            for (const auto& bucketLength : bucketLengths) {
+                core_t::TTime buckets{window / bucketLength};
+                std::size_t numberOutliers{static_cast<std::size_t>(0.15 * buckets)};
+                rng.generateUniformSamples(0, buckets, numberOutliers, outliers);
+                rng.generateUniformSamples(0, 1.0, numberOutliers, spikeOrTroughSelector);
+                rng.generateNormalSamples(0.0, 9.0, buckets, noise);
+                std::sort(outliers.begin(), outliers.end());
+
+                //std::ofstream file;
+                //file.open("results.m");
+                //TDoubleVec f;
+
+                maths::TFloatMeanAccumulatorVec values(buckets);
+                for (core_t::TTime time = startTime; time < startTime + window;
+                     time += bucketLength) {
+                    std::size_t bucket((time - startTime) / bucketLength);
+                    auto outlier = std::lower_bound(outliers.begin(), outliers.end(), bucket);
+                    if (outlier != outliers.end() && *outlier == bucket) {
+                        values[bucket].add(
+                            spikeOrTroughSelector[outlier - outliers.begin()] > 0.2 ? 0.0 : 100.0);
+                    } else {
+                        values[bucket].add(
+                            20.0 + 20.0 * std::sin(boost::math::double_constants::two_pi *
+                                                   static_cast<double>(time) /
+                                                   static_cast<double>(period)));
+                    }
+                    //f.push_back(maths::CBasicStatistics::mean(values[bucket]));
+                }
+                //file << "f = " << core::CContainerPrinter::print(f) << ";";
+
+                maths::CPeriodicityHypothesisTestsConfig config;
+                maths::CPeriodicityHypothesisTestsResult result{
+                    maths::testForPeriods(config, startTime, bucketLength, values)};
+                LOG_DEBUG(<< "result = " << result.print());
+                if (period == DAY) {
+                    CPPUNIT_ASSERT_EQUAL(std::string{"{ 'daily' }"}, result.print());
+                } else if (period == WEEK) {
+                    CPPUNIT_ASSERT_EQUAL(std::string{"{ 'weekly' }"}, result.print());
+                }
+            }
+        }
+    }
+
+    LOG_DEBUG(<< "Weekday / Weekend");
+    for (const auto& window : windows) {
+        if (window < 2 * WEEK) {
+            continue;
+        }
+        for (const auto& bucketLength : bucketLengths) {
+            core_t::TTime buckets{window / bucketLength};
+            std::size_t numberOutliers{static_cast<std::size_t>(0.15 * buckets)};
+            rng.generateUniformSamples(0, buckets, numberOutliers, outliers);
+            rng.generateUniformSamples(0, 1.0, numberOutliers, spikeOrTroughSelector);
+            rng.generateNormalSamples(0.0, 9.0, buckets, noise);
+            std::sort(outliers.begin(), outliers.end());
+
+            //std::ofstream file;
+            //file.open("results.m");
+            //TDoubleVec f;
+
+            maths::TFloatMeanAccumulatorVec values(buckets);
+            for (core_t::TTime time = startTime; time < startTime + window; time += bucketLength) {
+                std::size_t bucket((time - startTime) / bucketLength);
+                auto outlier = std::lower_bound(outliers.begin(), outliers.end(), bucket);
+                if (outlier != outliers.end() && *outlier == bucket) {
+                    values[bucket].add(
+                        spikeOrTroughSelector[outlier - outliers.begin()] > 0.2 ? 0.0 : 100.0);
+                } else {
+                    values[bucket].add(
+                        modulation[((time - startTime) / DAY) % 7] *
+                        (20.0 + 20.0 * std::sin(boost::math::double_constants::two_pi *
+                                                static_cast<double>(time) /
+                                                static_cast<double>(DAY))));
+                }
+                //f.push_back(maths::CBasicStatistics::mean(values[bucket]));
+            }
+            //file << "f = " << core::CContainerPrinter::print(f) << ";";
+
+            maths::CPeriodicityHypothesisTestsConfig config;
+            maths::CPeriodicityHypothesisTestsResult result{
+                maths::testForPeriods(config, startTime, bucketLength, values)};
+            LOG_DEBUG(<< "result = " << result.print());
+            CPPUNIT_ASSERT_EQUAL(std::string("{ 'weekend daily' 'weekday daily' }"),
+                                 result.print());
+        }
+    }
+}
+
 void CPeriodicityHypothesisTestsTest::testTestForPeriods() {
     // Test the ability to correctly find and test for periodic
     // signals without being told the periods to test a-priori.
@@ -550,15 +663,13 @@ void CPeriodicityHypothesisTestsTest::testTestForPeriods() {
         if (test % 10 == 0) {
             LOG_DEBUG(<< "test " << test << " / 100");
         }
-        for (std::size_t i = 0u; i < windows.size(); ++i) {
-            core_t::TTime window{windows[i]};
-
+        for (const auto& window : windows) {
             TDoubleVec scaling_;
             rng.generateUniformSamples(1.0, 5.0, 1, scaling_);
             double scaling{test % 2 == 0 ? scaling_[0] : 1.0 / scaling_[0]};
 
-            for (std::size_t j = 0u; j < bucketLengths.size(); ++j) {
-                core_t::TTime bucketLength{bucketLengths[j]};
+            for (std::size_t i = 0u; i < bucketLengths.size(); ++i) {
+                core_t::TTime bucketLength{bucketLengths[i]};
                 core_t::TTime period{maths::CIntegerTools::floor(
                     static_cast<core_t::TTime>(static_cast<double>(DAY) / scaling), bucketLength)};
                 scaling = static_cast<double>(DAY) / static_cast<double>(period);
@@ -581,7 +692,7 @@ void CPeriodicityHypothesisTestsTest::testTestForPeriods() {
                     rng.generateLogNormalSamples(0.2, 0.3, window / bucketLength, noise);
                     break;
                 }
-                rng.generateUniformSamples(0, permittedGenerators[j], 1, index);
+                rng.generateUniformSamples(0, permittedGenerators[i], 1, index);
                 rng.generateUniformSamples(3, 20, 1, repeats);
 
                 maths::CPeriodicityHypothesisTests hypotheses;
@@ -646,6 +757,9 @@ CppUnit::Test* CPeriodicityHypothesisTestsTest::suite() {
     suiteOfTests->addTest(new CppUnit::TestCaller<CPeriodicityHypothesisTestsTest>(
         "CPeriodicityHypothesisTestsTest::testWithSparseData",
         &CPeriodicityHypothesisTestsTest::testWithSparseData));
+    suiteOfTests->addTest(new CppUnit::TestCaller<CPeriodicityHypothesisTestsTest>(
+        "CPeriodicityHypothesisTestsTest::testWithOutliers",
+        &CPeriodicityHypothesisTestsTest::testWithOutliers));
     suiteOfTests->addTest(new CppUnit::TestCaller<CPeriodicityHypothesisTestsTest>(
         "CPeriodicityHypothesisTestsTest::testTestForPeriods",
         &CPeriodicityHypothesisTestsTest::testTestForPeriods));

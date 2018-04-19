@@ -634,10 +634,9 @@ void CMetricModelTest::testMultivariateSample() {
                         ->prior();
 
                 LOG_DEBUG(<< "bucket count = " << core::CContainerPrinter::print(count));
-                LOG_DEBUG(<< "current = " << core::CContainerPrinter::print(bucketLatLong));
-                LOG_DEBUG(<< ", expected baseline = "
-                          << maths::CBasicStatistics::mean(expectedBaselineLatLong));
-                LOG_DEBUG(<< ", actual baseline = "
+                LOG_DEBUG(<< "current = " << core::CContainerPrinter::print(bucketLatLong)
+                          << ", expected baseline = "
+                          << maths::CBasicStatistics::mean(expectedBaselineLatLong) << ", actual baseline = "
                           << core::CContainerPrinter::print(baselineLatLong));
 
                 CPPUNIT_ASSERT(count);

@@ -225,6 +225,8 @@ private:
         CPeriodicityHypothesisTestsResult s_H0;
         //! The variance estimate of H0.
         double s_V0;
+        //! The autocorrelation estimate of H0.
+        double s_R0;
         //! The degrees of freedom in the variance estimate of H0.
         double s_DF0;
         //! The trend for the null hypothesis.
@@ -233,6 +235,9 @@ private:
         TTimeTimePr2Vec s_Partition;
         //! The start of the repeating partition.
         core_t::TTime s_StartOfPartition;
+        //! True if we should remove outliers when computing stats for
+        //! the null hypothesis.
+        bool s_RemoveOutliers;
     };
 
     //! \brief Manages the testing of a set of nested hypotheses.
@@ -341,7 +346,7 @@ private:
 
     //! Check if there are enough non-empty buckets which are repeated
     //! at at least one \p period in \p buckets.
-    bool seenSufficientPeriodicallyPopulatedBucketsToTest(const TFloatMeanAccumulatorCRng& buckets,
+    bool seenSufficientPeriodicallyPopulatedBucketsToTest(const TFloatMeanAccumulatorVec& buckets,
                                                           std::size_t period) const;
 
     //! Compute various ancillary statistics for testing.
