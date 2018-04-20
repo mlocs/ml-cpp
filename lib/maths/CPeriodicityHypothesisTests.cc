@@ -988,9 +988,14 @@ void CPeriodicityHypothesisTests::hypothesesForPeriod(const TTimeTimePr2Vec& win
 
 CPeriodicityHypothesisTestsResult
 CPeriodicityHypothesisTests::best(const TNestedHypothesesVec& hypotheses) const {
-    // Note if there isn't a clear cut best hypothesis for variance
-    // reduction we choose the simplest hypothesis, i.e. with maximum
-    // degrees-of-freedom.
+    // We are comparing different accepted hypotheses here. In particular,
+    // diurnal and the best non-diurnal components with and without fitting
+    // a linear ramp to the values. We use a smooth decision function to
+    // select between them preferring:
+    //   1) The hypothesis which explains the most variance,
+    //   2) The simplest hypothesis (fewest parameters),
+    //   3) The hypothesis which most exceeds the minimum autocorrelation
+    //      to accept.
 
     using TMinAccumulator = CBasicStatistics::SMin<double>::TAccumulator;
 
@@ -1035,14 +1040,6 @@ CPeriodicityHypothesisTests::best(const TNestedHypothesesVec& hypotheses) const 
                      summary.s_Vt / vmin[0]};
             double R{summary.s_R / summary.s_Rt};
             double DF{summary.s_DF / DFmin[0]};
-            // We are comparing different accepted hypotheses here. In particular,
-            // diurnal and the best non-diurnal components with and without fitting
-            // a linear ramp to the values. We use a smooth decision function to
-            // select between them preferring:
-            //   1) The hypothesis which explains the most variance,
-            //   2) The simplest hypothesis (fewest parameters),
-            //   3) The hypothesis which most exceeds the minimum autocorrelation
-            //      to accept.
             double p{CTools::logisticFunction(v, 0.2, 1.0, -1.0) *
                      CTools::logisticFunction(R, 0.2, 1.0, +1.0) *
                      CTools::logisticFunction(DF, 0.2, 1.0, +1.0)};
