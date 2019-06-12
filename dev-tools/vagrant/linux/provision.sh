@@ -25,9 +25,12 @@ fi
 # Install Java
 if [ ! -f java.state ]; then
   echo "Installing Java..."
-  echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
-  echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections
-  apt-get -qq -y install oracle-java8-installer
+  add-apt-repository -y ppa:openjdk-r/ppa
+  apt-get update
+  # echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
+  # echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections
+  # apt-get -qq -y install oracle-java8-installer
+  apt-get -qq -y install openjdk-8-jdk openjdk-8-jre
   touch java.state
 fi
 
@@ -197,7 +200,7 @@ if [ ! -f boost.state ]; then
 
   echo "  Configuring..."
 
-  sed -i -e 's/(17ul)(29ul)(37ul)(53ul)(67ul)(79ul) \\/(3ul)(17ul)(29ul)(37ul)(53ul)(67ul)(79ul) \\/' boost/unordered/detail/util.hpp
+  sed -i -e 's/(17ul)(29ul)(37ul)(53ul)(67ul)(79ul) \\/(3ul)(17ul)(29ul)(37ul)(53ul)(67ul)(79ul) \\/' boost/unordered/detail/implementation.hpp
   sed -i -e 's%#if ((defined(__linux__) \&\& !defined(__UCLIBC__) \&\& !defined(BOOST_MATH_HAVE_FIXED_GLIBC)) || defined(__QNX__) || defined(__IBMCPP__)) \&\& !defined(BOOST_NO_FENV_H)%#if ((!defined(BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS) \&\& defined(__linux__) \&\& !defined(__UCLIBC__) \&\& !defined(BOOST_MATH_HAVE_FIXED_GLIBC)) || defined(__QNX__) || defined(__IBMCPP__)) \&\& !defined(BOOST_NO_FENV_H)%g' boost/math/tools/config.hpp
 
   echo "  Building..."
