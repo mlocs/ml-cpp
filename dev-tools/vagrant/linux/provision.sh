@@ -267,7 +267,8 @@ fi
 cat >> /home/vagrant/.bash_profile <<'EOF'
 umask 0002
 export ML_SRC_HOME=/home/vagrant/ml/src
-export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+export CPP_SRC_HOME=$ML_SRC_HOME
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 unset JAVA_ROOT
 export LD_LIBRARY_PATH=/usr/local/gcc73/lib64:/usr/local/gcc73/lib:/usr/lib:/lib
 export PATH=$JAVA_HOME/bin:/bin:/usr/local/gcc73/bin:/usr/bin:/bin:/usr/sbin:/sbin:/home/vagrant/bin
