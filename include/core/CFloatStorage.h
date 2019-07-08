@@ -10,8 +10,6 @@
 #include <core/CLogger.h>
 #include <core/CStringUtils.h>
 
-#include <maths/ImportExport.h>
-
 #include <cmath>
 #include <limits>
 
