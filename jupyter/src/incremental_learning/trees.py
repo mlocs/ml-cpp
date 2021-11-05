@@ -205,8 +205,8 @@ class Forest:
     def __len__(self):
         return len(self.trees)
 
-    def max_tree_length(self):
-        return max(map(lambda x: x.number_nodes, self.trees))
+    def max_tree_size(self):
+        return max(map(lambda x: x.size(), self.trees))
 
     def min_gain(self):
         return min(map(lambda x: x.min_gain(), self.trees))
