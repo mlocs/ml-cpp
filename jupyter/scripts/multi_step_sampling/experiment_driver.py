@@ -108,7 +108,7 @@ def get_forest_statistics(model_definition):
     forest = Forest(trained_models)
     result = {}
     result['num_trees'] = len(forest)
-    result['tree_nodes_max'] = forest.max_tree_length()
+    result['tree_nodes_max'] = forest.max_tree_size()
     result['tree_nodes_mean'] = np.mean(forest.tree_sizes())
     result['tree_nodes_std'] = np.std(forest.tree_sizes())
     result['tree_depth_mean'] = np.mean(forest.tree_depths())
