@@ -39,7 +39,7 @@ def generate_job_file(config, cwd, force_update, verbose, tag):
                       'dataset_name="{}"'.format(config['dataset_name']),
                       'threads={}'.format(config['threads']),
                       'seed={}'.format(config['seed']),
-                      'max_num_new_trees={}'.format(config['max_num_new_trees']),
+                      '\'analysis={{"parameters":{{"max_num_new_trees":{} }} }}\''.format(config['max_num_new_trees']),
                       'transform_name="{}"'.format(config['transform_name']),
                       'transform_parameters="{}"'.format(config['transform_parameters'])]
 
