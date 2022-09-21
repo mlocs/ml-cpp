@@ -149,6 +149,8 @@ CDataFrameTrainBoostedTreeRunner::CDataFrameTrainBoostedTreeRunner(
 
     // Training parameters.
     auto seed = parameters[RANDOM_NUMBER_GENERATOR_SEED].fallback(std::size_t{0});
+    // Additional debug output for investigating https://github.com/elastic/elasticsearch/issues/88536.
+    LOG_DEBUG(<<"Random number generator seed: "<< seed);
     auto numberHoldoutRows = parameters[NUM_HOLDOUT_ROWS].fallback(std::size_t{0});
     auto numberFolds = parameters[NUM_FOLDS].fallback(std::size_t{0});
     auto trainFractionPerFold = parameters[TRAIN_FRACTION_PER_FOLD].fallback(-1.0);
