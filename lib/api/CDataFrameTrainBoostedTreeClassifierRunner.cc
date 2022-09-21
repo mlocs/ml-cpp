@@ -11,6 +11,7 @@
 
 #include <api/CDataFrameTrainBoostedTreeClassifierRunner.h>
 
+#include <core/CContainerPrinter.h>
 #include <core/CDataFrame.h>
 #include <core/CLogger.h>
 #include <core/CMemoryDef.h>
@@ -256,6 +257,19 @@ void CDataFrameTrainBoostedTreeClassifierRunner::writeOneRow(
                         const_cast<CDataFrameTrainBoostedTreeClassifierRunner*>(this)
                             ->m_InferenceModelMetadata.addToFeatureImportance(i, shap[i]);
                     }
+                }
+
+                // Additional debug output for investigating https://github.com/elastic/elasticsearch/issues/88536.
+                if (std::accumulate(shap.begin(), shap.end(), 0.0,
+                                    [](double norm, const auto& sh) {
+                                        return norm + sh.norm();
+                                    }) == 0) {
+                    std::size_t numberEncodedColumns{
+                        this->boostedTree().categoryEncoder().numberEncodedColumns()};
+                    LOG_DEBUG(<< "Empty shap values for the row "
+                              << core::CContainerPrinter::print(row.data(), row.data() + numberEncodedColumns)
+                              << " predictedClass " << predictedClassId
+                              << " shap values " << shap);
                 }
             });
     }

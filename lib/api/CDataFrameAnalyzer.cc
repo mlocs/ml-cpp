@@ -343,6 +343,8 @@ void CDataFrameAnalyzer::writeInferenceModel(const CDataFrameAnalysisRunner& ana
     auto modelDefinition = analysis.inferenceModelDefinition(
         m_DataFrame->columnNames(), m_DataFrame->categoricalColumnValues());
     if (modelDefinition != nullptr) {
+        // Additional debug output for investigating https://github.com/elastic/elasticsearch/issues/88536.
+        LOG_DEBUG(<< "Model definition " << modelDefinition->jsonString());
         auto modelDefinitionSizeInfo = modelDefinition->sizeInfo();
         rapidjson::Value sizeInfoObject{writer.makeObject()};
         modelDefinitionSizeInfo->addToJsonDocument(sizeInfoObject, writer);
