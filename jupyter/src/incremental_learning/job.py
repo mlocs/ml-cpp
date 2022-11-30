@@ -496,7 +496,7 @@ def run_job(input, config, persist=None, restore=None, verbose=True, run=None) -
 
 
 def train(dataset_name: str, dataset: pandas.DataFrame,
-          encode_job: Job=None, verbose: bool = True, run=None) -> Job:
+          encode_job: Job=None, verbose: bool = True, run=None, config: dict = {}) -> Job:
     """Train a model on the dataset.
 
     Args:
@@ -510,8 +510,9 @@ def train(dataset_name: str, dataset: pandas.DataFrame,
     dataset.to_csv(data_file, index=False, na_rep='\0')
     data_file.file.close()
 
-    with open(configs_dir / '{}.json'.format(dataset_name)) as fc:
-        config = json.load(fc)
+    if not config:
+        with open(configs_dir / '{}.json'.format(dataset_name)) as fc:
+            config = json.load(fc)
     config['rows'] = dataset.shape[0]
     config = update_config(config, run=run)
 
@@ -535,7 +536,8 @@ def train(dataset_name: str, dataset: pandas.DataFrame,
     return job
 
 
-def evaluate(dataset_name: str, dataset: pandas.DataFrame, original_job: Job, verbose: bool = True, run=None) -> Job:
+def evaluate(dataset_name: str, dataset: pandas.DataFrame, original_job: Job, verbose: bool = True, run=None,
+config: dict = {}) -> Job:
     """Evaluate the model on a given dataset .
 
     Args:
@@ -550,8 +552,10 @@ def evaluate(dataset_name: str, dataset: pandas.DataFrame, original_job: Job, ve
     fdata = tempfile.NamedTemporaryFile(mode='wt')
     dataset.to_csv(fdata, index=False, na_rep=0)
     fdata.file.close()
-    with open(configs_dir / '{}.json'.format(dataset_name)) as fc:
-        config = json.load(fc)
+    
+    if not config:
+        with open(configs_dir / '{}.json'.format(dataset_name)) as fc:
+            config = json.load(fc)
     config['rows'] = dataset.shape[0] + \
         original_job.get_data_summarization_num_rows()
     config = update_config(config, run=run)
@@ -574,7 +578,7 @@ def update(dataset_name: str,
            force: bool = False,
            verbose: bool = True,
            hyperparameter_overrides: dict = {},
-           run=None) -> Job:
+           run=None, config:dict= {}) -> Job:
     """Train a new model incrementally using the model and hyperparameters from the original job.
 
     Args:
@@ -592,8 +596,9 @@ def update(dataset_name: str,
     fdata = tempfile.NamedTemporaryFile(mode='wt')
     dataset.to_csv(fdata, index=False, na_rep=0)
     fdata.file.close()
-    with open(configs_dir / '{}.json'.format(dataset_name)) as fc:
-        config = json.load(fc)
+    if not config :
+        with open(configs_dir / '{}.json'.format(dataset_name)) as fc:
+            config = json.load(fc)
     config['rows'] = dataset.shape[0] + \
         original_job.get_data_summarization_num_rows()
     config = update_config(config, run=run)
@@ -619,7 +624,7 @@ def update(dataset_name: str,
 def encode(dataset_name: str,
            dataset: pandas.DataFrame,
            verbose: bool = True,
-           run=None) -> Job:
+           run=None, config: dict = {}) -> Job:
     """Generate data frame encoding without training.
 
     Args:
@@ -634,8 +639,9 @@ def encode(dataset_name: str,
     fdata = tempfile.NamedTemporaryFile(mode='wt')
     dataset.to_csv(fdata, index=False, na_rep=0)
     fdata.file.close()
-    with open(configs_dir / f'{dataset_name}.json', encoding='utf-8') as fc:
-        config = json.load(fc)
+    if not config:
+        with open(configs_dir / f'{dataset_name}.json', encoding='utf-8') as fc:
+            config = json.load(fc)
     config['rows'] = dataset.shape[0]
     config = update_config(config, run=run)
 
