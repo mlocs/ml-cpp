@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<doxygenlayout version="1.0">
+  <!-- The header consists of a series of tabs. -->
+  <navindex>
+    <tab type="mainpage" visible="yes" title=""/>
+    <tab type="usergroup" visible="yes" title="How-To's" url="[none]">
+      <tab type="user" url="@ref build-setup" title="Setting up the Dev Environment"/>
+    </tab>
+   
+    <tab type="modules" visible="yes" title="" intro=""/>
+    <tab type="namespaces" visible="yes" title="">
+      <tab type="namespacelist" visible="yes" title="" intro=""/>
+      <tab type="namespacemembers" visible="yes" title="" intro=""/>
+    </tab>
+    <tab type="classes" visible="yes" title="">
+      <tab type="classlist" visible="yes" title="" intro=""/>
+      <tab type="classindex" visible="$ALPHABETICAL_INDEX" title=""/> 
+      <tab type="hierarchy" visible="yes" title="" intro=""/>
+      <tab type="classmembers" visible="yes" title="" intro=""/>
+    </tab>
+    <tab type="files" visible="yes" title="">
+      <tab type="filelist" visible="yes" title="" intro=""/>
+      <tab type="globals" visible="yes" title="" intro=""/>
+    </tab>
+    <tab type="pages" visible="yes" title="All static pages" intro="" /> 
+  </navindex>
+  <!-- Define the sidebar structure -->
+  <sidebar>
+    <item type="mainpage" visible="yes" title="Main Page" />
+    <!-- <item type="pages" visible="yes" title="User Manuals" /> -->
+    <item type="usergroup" visible="yes" title="Dev Environment" refid="build-setup" />
+    <!-- Omit namespaces, classes, and files -->
+  </sidebar>
+</doxygenlayout>

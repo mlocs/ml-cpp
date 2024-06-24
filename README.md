@@ -1,5 +1,7 @@
 # Machine Learning for the Elastic Stack
 
+\tableofcontents
+
 <https://www.elastic.co/what-is/elasticsearch-machine-learning>
 
 The ml-cpp repo is a part of Machine Learning for the Elastic Stack, which is

@@ -1,5 +1,7 @@
 # Machine Learning Build Machine Setup for macOS cross compiled on Linux
 
+\tableofcontents
+
 You will need the following environment variables to be defined:
 
 - `JAVA_HOME` - Should point to the JDK you want to use to run Gradle.

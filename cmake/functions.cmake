@@ -437,20 +437,41 @@ function(ml_doxygen _output)
   set(DOXYGEN_EXTRACT_PRIVATE        YES)
   set(DOXYGEN_EXTRACT_STATIC         YES)
   set(DOXYGEN_EXTRACT_ANON_NSPACES   YES)
-  set(DOXYGEN_FILE_PATTERNS          *.cc  *.h)
+  set(DOXYGEN_FILE_PATTERNS          *.cc  *.h  *.md)
+  set(DOXYGEN_LAYOUT_FILE            ${CMAKE_SOURCE_DIR}/cmake/doxygen/DoxygenLayout.xml)
   set(DOXYGEN_RECURSIVE              YES)
   set(DOXYGEN_EXCLUDE                3rd_party)
   set(DOXYGEN_HTML_OUTPUT            cplusplus)
-  set(DOXYGEN_SEARCHENGINE           NO)
   set(DOXYGEN_PAPER_TYPE             a4wide)
   set(DOXYGEN_EXTRA_PACKAGES         amsmath amssymb)
   set(DOXYGEN_LATEX_BATCHMODE        YES)
   set(DOXYGEN_HAVE_DOT               YES)
   set(DOXYGEN_DOT_FONTNAME           FreeSans)
   set(DOXYGEN_DOT_GRAPH_MAX_NODES    100)
+  set(DOXYGEN_CALL_GRAPH             YES)
+  set(DOXYGEN_CALLER_GRAPH           YES)
+  set(DOXYGEN_DOT_IMAGE_FORMAT       svg)
+  set(DOXYGEN_DOT_TRANSPARENT        YES)
+  set(DOXYGEN_INTERACTIVE_SVG        YES)
+  set(DOXYGEN_GENERATE_TREEVIEW      NO)
+  set(DOXYGEN_HTML_DYNAMIC_SECTIONS  YES)
+  set(DOXYGEN_HTML_EXTRA_STYLESHEET  ${CMAKE_SOURCE_DIR}/3rd_party/doxygen-awesome-css/doxygen-awesome.css)
+  set(DOXYGEN_DISABLE_INDEX          NO)
+  set(DOXYGEN_FULL_SIDEBAR           NO)
+  set(DOXYGEN_SEARCHENGINE           YES)
+  set(DOXYGEN_HTML_COLORSTYLE        TOGGLE)
+  set(DOXYGEN_SERVER_BASED_SEARCH    NO)
+  set(DOXYGEN_IMAGE_PATH             ${CMAKE_SOURCE_DIR}/build-setup/clion ${CMAKE_SOURCE_DIR}/build-setup/vscode )
+  set(DOXYGEN_USE_MDFILE_AS_MAINPAGE README.md)  # Optional: Set a mainpage
 
   doxygen_add_docs(doxygen
-      ${PROJECT_SOURCE_DIR}
+      ${PROJECT_SOURCE_DIR}/bin
+      ${PROJECT_SOURCE_DIR}/include
+      ${PROJECT_SOURCE_DIR}/lib
+      ${PROJECT_SOURCE_DIR}/build-setup
+      ${PROJECT_SOURCE_DIR}/README.md
+      ${PROJECT_SOURCE_DIR}/STYLEGUIDE.md
+      ${PROJECT_SOURCE_DIR}/CONTRIBUTING.md
       COMMENT "Generate HTML documentation"
   )
 

@@ -1,5 +1,7 @@
 # Machine Learning Build Machine Setup for Windows
 
+\tableofcontents
+
 These instructions are for setting up a Windows build machine from scratch.
 
 For subsequent machines, the setup can be simplified by copying components from the first machine - see [windows_simple.md](windows_simple.md).

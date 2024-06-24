@@ -1,5 +1,7 @@
 # Using Visual Studio Code with `ml-cpp`
 
+\tableofcontents
+
 As an alternative to [CLion](../clion/using_clion.md), `VSCode` offers support
 for `CMake` projects by way of an extension, while still being able to provide features like autocompletion,
 code navigation, static code analysis, etc. 

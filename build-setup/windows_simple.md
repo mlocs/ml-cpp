@@ -1,5 +1,7 @@
 # Machine Learning Build Machine Setup for Windows (simple)
 
+\tableofcontents
+
 These instructions are an alternative to the "from scratch" instructions in [windows.md](windows.md).
 
 This setup relies on pre-built 3rd party components previously built by the "from scratch" instructions and uploaded to s3. However, you get a fully working dev environment for ml-cpp.

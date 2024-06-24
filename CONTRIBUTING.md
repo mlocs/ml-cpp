@@ -1,4 +1,6 @@
-# Contributing to Elasticsearch Machine Learning Core
+# Contributing to Elasticsearch Machine Learning Core {#contributing}
+
+\tableofcontents
 
 We love to receive contributions from our community — you! There are many ways to contribute, from writing tutorials or blog posts, improving the documentation, submitting bug reports and feature requests or writing code which can be incorporated into the Elastic Stack itself.
 

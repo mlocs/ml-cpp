@@ -1,5 +1,7 @@
 # Using CLion with `ml-cpp`
 
+\tableofcontents
+
 Previous versions of `ml-cpp` provided instructions on how to configure `CLion` using a compilation database format or 
 a Makefile project. Those methods of integrating `CLion` with the `ml-cpp` repository have now been superseded by
 creating a `CMake` project. Before proceeding further delete any pre-existing `.idea` directory from the root of

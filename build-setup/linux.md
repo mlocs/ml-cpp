@@ -1,5 +1,7 @@
 # Machine Learning Build Machine Setup for Linux
 
+\tableofcontents
+
 These same instructions should work for native compilation on both x86_64 and aarch64 architectures.
 
 To ensure everything is consistent for redistributable builds we build all redistributable components from source with a specific version of gcc.
